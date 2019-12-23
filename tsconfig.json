@@ -5,9 +5,11 @@
     "declaration": true,
     "outDir": "./lib",
     "strict": true,
-    "lib": ["es2015", "es2017", "dom"]
+    "lib": ["es2015", "es2017", "dom"],
+    "noImplicitAny": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/__tests__/*"],
+
 
 }
