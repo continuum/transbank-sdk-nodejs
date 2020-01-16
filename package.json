@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "watch": "tsc -w",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
@@ -22,12 +23,13 @@
   ],
   "homepage": "https://github.com/caki0915/my-awesome-greeter#readme",
   "dependencies": {
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "node-uuid": "^1.4.8",
+    "pem": "^1.14.3",
     "soap": "^0.30.0",
     "ursa-purejs": "0.0.3",
-    "xml-crypto": "^1.4.0",
-    "pem": "^1.14.3",
-    "node-uuid": "^1.4.8",
-    "ejs": "^3.0.1"
+    "xml-crypto": "^1.4.0"
   },
   "devDependencies": {
     "@types/jest": "^22.2.3",

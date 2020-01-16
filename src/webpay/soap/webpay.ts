@@ -1,9 +1,9 @@
-import { WEBPAY_CERTIFICATE_INTEGRATION, WEBPAY_CERTIFICATE_PRODUCTION } from "./configuration_keys";
-import { Configuration } from './configuration';
-import { createClient } from 'soap';
-import { WebPayUniqueAndSpecialNonStandardWSSecurityCert } from "./security";
-import { SignedXml, xpath as select } from 'xml-crypto';
-import { DOMParser } from 'xmldom';
+import {WEBPAY_CERTIFICATE_INTEGRATION, WEBPAY_CERTIFICATE_PRODUCTION} from "./configuration_keys";
+import {Configuration} from './configuration';
+import {createClient} from 'soap';
+import {WebPayUniqueAndSpecialNonStandardWSSecurityCert} from "./security";
+import {SignedXml, xpath as select} from 'xml-crypto';
+import {DOMParser} from 'xmldom';
 
 interface InitTransactionBody {
     commerceCode: string,
@@ -11,16 +11,10 @@ interface InitTransactionBody {
     amount: number
 }
 
-enum Environments {
-    INTEGRACION = "INTEGRACION",
-    CERTIFICACION = "INTEGRACION",
-    TEST = "INTEGRACION",
-    PRODUCCION = "PRODUCCION",
-    LIVE = "PRODUCCION",
-}
+import Environments from "./environments";
 
 // initTransaction (create) -> getTransactionResult (commit) (internamente llama a getTrxResult + ACK en API tbk)
-class Webpay {
+export default class Webpay {
     private static RESULT_CODES = {
         "0": "Transacción aprobada",
         "-1": "Rechazo de transacción",
@@ -42,9 +36,9 @@ class Webpay {
     configuration: Configuration;
     environment: keyof typeof Environments;
 
-    constructor(configuration: Configuration, environment: keyof typeof Environments) {
+    constructor(configuration: Configuration) {
         this.configuration = configuration;
-        this.environment = Environments[environment];
+        this.environment = this.configuration.environment;
     }
 
     static defaultCert(environment: keyof typeof Environments | null = null) {
@@ -56,7 +50,7 @@ class Webpay {
 
     initTransaction(amount: number, buyOrder: string, sessionId: string, transactionType: string,
                     returnUrl: string, finalUrl: string) {
-        const { commerceCode } = this.configuration;
+        const {commerceCode} = this.configuration;
         const body = {
             wsInitTransactionInput: {
                 wSTransactionType: "TR_NORMAL_WS",
@@ -75,28 +69,28 @@ class Webpay {
 
         const url = Webpay.WSDL_URL[this.environment];
 
-        let options = {
+        const options = {
             ignoredNamespaces: {
                 namespaces: [],
                 override: true
             }
         };
-        const cl = createClient(url, options, (err, client) => {
-            if(err) {
+        const soapClient = createClient(url, options, (err, client) => {
+            if (err) {
                 throw new Error(err);
             }
             const sec = new WebPayUniqueAndSpecialNonStandardWSSecurityCert(
-                            this.configuration.privateKey,
-                            this.configuration.publicCert,
-                    'utf8');
+                this.configuration.privateKey,
+                this.configuration.publicCert,
+                'utf8');
             client.setSecurity(sec);
             client.WSWebpayServiceImplService.WSWebpayServiceImplPort.initTransaction({
                 wsInitTransactionInput: body
             }, (err, result, raw, soapHeader) => {
-                if(err) {
+                if (err) {
                     throw new Error(err);
                 }
-                if(this._verifySignature(raw)) {
+                if (this._verifySignature(raw)) {
                     return result.return;
                 } else {
                     throw new Error('Invalid signature response');
@@ -104,7 +98,10 @@ class Webpay {
             });
         });
 
-        return cl;
+        return new Promise((resolve, reject) => {
+            //resolve({url: 'https://google.com', token: 'chao'});
+        });
+
     }
 
     _verifySignature(xml) {
@@ -130,15 +127,13 @@ class Webpay {
                 return res
             };
             let webpayKey = this.configuration.webpayCert;
-            sig.keyInfoProvider = {
-                getKeyInfo: function (key, prefix) {
-                    prefix = prefix || '';
-                    prefix = prefix ? prefix + ':' : prefix;
-                    return "<" + prefix + "X509Data></" + prefix + "X509Data>";
-                },
-                getKey: function (keyInfo) {
-                    return webpayKey
-                }
+            sig.keyInfoProvider.getKeyInfo = (key, prefix) => {
+                prefix = prefix || '';
+                prefix = prefix ? prefix + ':' : prefix;
+                return "<" + prefix + "X509Data></" + prefix + "X509Data>";
+            };
+            sig.keyInfoProvider.getKey = (keyInfo): Buffer => {
+                return Buffer.from(webpayKey, 'utf-8')
             };
             // @ts-ignore
             sig.loadSignature(signature);

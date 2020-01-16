@@ -1,6 +1,8 @@
 import * as keys from './configuration_keys';
 
-const DEFAULT_ENV = 'INTEGRACION';
+import Environments from "./environments";
+
+const DEFAULT_ENV : keyof typeof Environments = Environments.INTEGRACION;
 const DEFAULT_CONSTRUCTOR_ARGS = {
     environment: DEFAULT_ENV,
     commerceCode: null,
@@ -10,10 +12,12 @@ const DEFAULT_CONSTRUCTOR_ARGS = {
     storeCodes: []
 };
 
+
+
 export class Configuration {
 
-    private DEFAULT_ENVIRONMENT: string = DEFAULT_ENV;
-    private _environment: string|null = this.DEFAULT_ENVIRONMENT;
+    private DEFAULT_ENVIRONMENT: keyof typeof Environments = DEFAULT_ENV;
+    private _environment: keyof typeof Environments = this.DEFAULT_ENVIRONMENT;
     private _commerceCode: string|null = null;
     private _privateKey: string|null = null;
     private _publicCert: string|null = null;
@@ -34,7 +38,7 @@ export class Configuration {
     }
 
     get defaultEnvironment() {
-        if (this.environment && this.environment != '') {
+        if (this.environment) {
             return this.environment;
         }
         return this.DEFAULT_ENVIRONMENT;
@@ -91,11 +95,11 @@ export class Configuration {
     }
 
 
-    get environment(): string | null {
+    get environment(): keyof typeof Environments {
         return this._environment;
     }
 
-    set environment(value: string | null) {
+    set environment(value: keyof typeof Environments) {
         this._environment = value;
     }
 
@@ -123,11 +127,12 @@ export class Configuration {
         this._publicCert = value;
     }
 
-    get webpayCert(): string | null {
+    get webpayCert(): string {
+        if (this._webpayCert === null) return "";
         return this._webpayCert;
     }
 
-    set webpayCert(value: string | null) {
+    set webpayCert(value: string) {
         this._webpayCert = value;
     }
 
