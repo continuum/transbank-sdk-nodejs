@@ -1,6 +1,6 @@
 import {WEBPAY_CERTIFICATE_INTEGRATION, WEBPAY_CERTIFICATE_PRODUCTION} from "./configuration_keys";
 import {Configuration} from './configuration';
-import {createClient} from 'soap';
+import {Client, createClient} from 'soap';
 import {WebPayUniqueAndSpecialNonStandardWSSecurityCert} from "./security";
 import {SignedXml, xpath as select} from 'xml-crypto';
 import {DOMParser} from 'xmldom';
@@ -48,7 +48,34 @@ export default class Webpay {
         return WEBPAY_CERTIFICATE_INTEGRATION
     }
 
-    initTransaction(amount: number, buyOrder: string, sessionId: string, transactionType: string,
+    public createClient(url) : Promise<Client> {
+        const options = {
+            ignoredNamespaces: {
+                namespaces: [],
+                override: true
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+            createClient(url, options, (err, client) => {
+                if (err) {
+                    throw new Error(err);
+                }
+
+                const sec = new WebPayUniqueAndSpecialNonStandardWSSecurityCert(
+                    this.configuration.privateKey,
+                    this.configuration.publicCert,
+                    'utf8');
+
+                sec.promise().then(() => {
+                    client.setSecurity(sec);
+                    resolve(client);
+                });
+            });
+        });
+    }
+
+    async initTransaction(amount: number, buyOrder: string, sessionId: string, transactionType: string,
                     returnUrl: string, finalUrl: string) {
         const {commerceCode} = this.configuration;
         const body = {
@@ -69,37 +96,52 @@ export default class Webpay {
 
         const url = Webpay.WSDL_URL[this.environment];
 
-        const options = {
-            ignoredNamespaces: {
-                namespaces: [],
-                override: true
-            }
-        };
-        const soapClient = createClient(url, options, (err, client) => {
+        let client = await this.createClient(url);
+
+        client.initTransaction({
+            wsInitTransactionInput: body.wsInitTransactionInput
+        }, (err, result, raw, soapHeader) => {
+            console.log('Last request', client.lastRequest);
+
             if (err) {
                 throw new Error(err);
             }
-            const sec = new WebPayUniqueAndSpecialNonStandardWSSecurityCert(
-                this.configuration.privateKey,
-                this.configuration.publicCert,
-                'utf8');
-            client.setSecurity(sec);
-            client.WSWebpayServiceImplService.WSWebpayServiceImplPort.initTransaction({
-                wsInitTransactionInput: body
-            }, (err, result, raw, soapHeader) => {
-                if (err) {
-                    throw new Error(err);
-                }
-                if (this._verifySignature(raw)) {
-                    return result.return;
-                } else {
-                    throw new Error('Invalid signature response');
-                }
-            });
+            if (this._verifySignature(raw)) {
+                return result.return;
+            } else {
+                throw new Error('Invalid signature response');
+            }
+
         });
 
+
+        // const soapClient = createClient(url, options, (err, client) => {
+        //     if (err) {
+        //         throw new Error(err);
+        //     }
+        //
+        //     //
+        //     // const sec = new WebPayUniqueAndSpecialNonStandardWSSecurityCert(
+        //     //     this.configuration.privateKey,
+        //     //     this.configuration.publicCert,
+        //     //     'utf8');
+        //     // client.setSecurity(sec);
+        //     // client.WSWebpayServiceImplService.WSWebpayServiceImplPort.initTransaction({
+        //     //     wsInitTransactionInput: body
+        //     // }, (err, result, raw, soapHeader) => {
+        //     //     if (err) {
+        //     //         throw new Error(err);
+        //     //     }
+        //     //     if (this._verifySignature(raw)) {
+        //     //         return result.return;
+        //     //     } else {
+        //     //         throw new Error('Invalid signature response');
+        //     //     }
+        //     // });
+        // });
+        //
         return new Promise((resolve, reject) => {
-            //resolve({url: 'https://google.com', token: 'chao'});
+            resolve({url: 'https://google.com', token: 'chao4'});
         });
 
     }
