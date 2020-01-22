@@ -9,4 +9,4 @@ COPY . /sdk
 #RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 #RUN php -r "unlink('composer-setup.php');"
 #RUN php -r "unlink('composer-setup.sig');"
-#RUN docker-php-ext-install soap
+#RUN docker-php-ext-install soapOld

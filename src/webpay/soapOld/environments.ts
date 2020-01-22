@@ -1,9 +1,9 @@
 enum Environments {
     INTEGRACION = "INTEGRACION",
-    CERTIFICACION = "CERTIFICACION",
-    TEST = "TEST",
+    CERTIFICACION = "INTEGRACION",
+    TEST = "INTEGRACION",
     PRODUCCION = "PRODUCCION",
-    LIVE = "LIVE",
+    LIVE = "PRODUCCION",
 }
 
 export default Environments;

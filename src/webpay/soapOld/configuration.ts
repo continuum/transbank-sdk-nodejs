@@ -1,5 +1,4 @@
-import * as integration_certificates from "./integration_certificates";
-import * as integration_commerce_codes from "./integration_commerce_codes";
+import * as keys from './configuration_keys';
 
 import Environments from "./environments";
 
@@ -25,11 +24,16 @@ export class Configuration {
     private _webpayCert: string|null = null;
     private _storeCodes: Array<string>|null = null;
 
-    private static keys = integration_certificates;
+    private static keys = keys;
+    private static WEBPAY_PLUS_NORMAL_DEFAULT_COMMERCE_CODE = "597020000540";
+    private static WEBPAY_PLUS_MALL_DEFAULT_COMMERCE_CODE = "597044444401";
+    private static WEBPAY_PLUS_DIFERIDO_DEFAULT_COMMERCE_CODE = "597044444404";
+    private static WEBPAY_ONECLICK_DEFAULT_COMMERCE_CODE = "597044444405";
+    private static WEBPAY_PATPASS_BY_WEBPAY_DEFAULT_COMMERCE_CODE = "597020000548";
 
 
     constructor(params:
-                Partial<{environment: keyof typeof Environments, commerceCode: string|null, privateKey: string|null, publicCert: string|null, webpayCert:string|null, storeCodes: Array<string>|null}> = DEFAULT_CONSTRUCTOR_ARGS) {
+                Partial<{environment: string|null, commerceCode: string|null, privateKey: string|null, publicCert: string|null, webpayCert:string|null, storeCodes: Array<string>|null}> = DEFAULT_CONSTRUCTOR_ARGS) {
         Object.assign(this, params);
     }
 
@@ -41,7 +45,7 @@ export class Configuration {
     }
 
     static forTestingWebpayPlusNormal() {
-        const commerceCode = integration_commerce_codes.WEBPAY_PLUS_NORMAL_DEFAULT_COMMERCE_CODE;
+        const commerceCode = this.WEBPAY_PLUS_NORMAL_DEFAULT_COMMERCE_CODE;
         return new Configuration({
             commerceCode,
             privateKey: this.keys.WEBPAY_PLUS_INTEGRATION_DEFAULT_PRIVATE_KEY,
@@ -51,7 +55,7 @@ export class Configuration {
     }
 
     static forTestingWebpayPlusMall() {
-        const commerceCode =  integration_commerce_codes.WEBPAY_PLUS_MALL_DEFAULT_COMMERCE_CODE;
+        const commerceCode =  this.WEBPAY_PLUS_MALL_DEFAULT_COMMERCE_CODE;
         return new Configuration({
             commerceCode,
             privateKey: this.keys.WEBPAY_PLUS_MALL_INTEGRATION_DEFAULT_PRIVATE_KEY,
@@ -61,7 +65,7 @@ export class Configuration {
     }
 
     static forTestingWebpayPlusDiferido() {
-        const commerceCode =  integration_commerce_codes.WEBPAY_PLUS_DIFERIDO_DEFAULT_COMMERCE_CODE;
+        const commerceCode =  this.WEBPAY_PLUS_DIFERIDO_DEFAULT_COMMERCE_CODE;
         return new Configuration({
             commerceCode,
             privateKey: this.keys.WEBPAY_PLUS_DIFERIDO_INTEGRATION_DEFAULT_PRIVATE_KEY,
@@ -71,7 +75,7 @@ export class Configuration {
     }
 
     static forTestingWebpayOneclick() {
-        const commerceCode =  integration_commerce_codes.WEBPAY_ONECLICK_DEFAULT_COMMERCE_CODE;
+        const commerceCode =  this.WEBPAY_ONECLICK_DEFAULT_COMMERCE_CODE;
         return new Configuration({
             commerceCode,
             privateKey: this.keys.WEBPAY_ONECLICK_INTEGRATION_DEFAULT_PRIVATE_KEY,
@@ -81,7 +85,7 @@ export class Configuration {
     }
 
     static forTestingPatPassByWebpayNormal() {
-        const commerceCode =  integration_commerce_codes.WEBPAY_PATPASS_BY_WEBPAY_DEFAULT_COMMERCE_CODE;
+        const commerceCode =  this.WEBPAY_PATPASS_BY_WEBPAY_DEFAULT_COMMERCE_CODE;
         return new Configuration({
             commerceCode,
             privateKey: this.keys.PATPASS_BY_WEBPAY_INTEGRATION_DEFAULT_PRIVATE_KEY,

@@ -118,7 +118,7 @@ export class WebPayUniqueAndSpecialNonStandardWSSecurityCert {
             issuerName: this.issuer
         });
 
-        let xmlWithSec = insertStr(secHeader, xml, xml.indexOf('</soap:Header>'));
+        let xmlWithSec = insertStr(secHeader, xml, xml.indexOf('</soapOld:Header>'));
 
         this.signer.computeSignature(xmlWithSec);
         return insertStr(this.signer.getSignatureXml(), xmlWithSec, xmlWithSec.indexOf('</wsse:Security>'));

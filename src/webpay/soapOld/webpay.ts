@@ -157,7 +157,7 @@ export default class Webpay {
                 if (signedInfo.length === 0) throw new Error("could not find SignedInfo element in the message");
                 // @ts-ignore
                 let signedInfoCanon = this.getCanonXml([this.canonicalizationAlgorithm], signedInfo[0]);
-                signedInfoCanon = signedInfoCanon.toString().replace("xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"", "xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"");
+                signedInfoCanon = signedInfoCanon.toString().replace("xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"", "xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:soapOld=\"http://schemas.xmlsoap.org/soap/envelope/\"");
                 // @ts-ignore
                 let signer = this.findSignatureAlgorithm(this.signatureAlgorithm);
                 // @ts-ignore
