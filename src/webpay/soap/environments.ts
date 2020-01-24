@@ -6,5 +6,5 @@ enum Environments {
     LIVE = "LIVE",
 }
 
-export default Environments;
+export default Environments
 

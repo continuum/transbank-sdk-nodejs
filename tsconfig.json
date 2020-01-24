@@ -1,14 +1,16 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "./lib",
+    "outDir": "lib",
     "strict": true,
     "lib": ["es2015", "es2017", "dom"],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "sourceMap": true
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "**/__tests__/*"],
 
 

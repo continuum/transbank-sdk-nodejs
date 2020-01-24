@@ -1,8 +1,11 @@
 "use strict";
 
-const Configuration = require("../lib/soap/configuration").Configuration;
+const WebpaySDK = require('../lib/');
+const Configuration = require('../lib/webpay/soap/configuration')
+console.log(Configuration);
+let Webpay = WebpaySDK.Webpay;
+// const Configuration = require("../lib/soap/configuration").Configuration;
 
-const WebpayNormal = require('../lib/soap/webpay-normal/webpay-normal').WebpayNormal;
 const express = require('express');
 const bodyParser = require('body-parser');
 const onError = require('./onError');
@@ -15,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cert = require('./cert/normal');
 
 const configuration = Configuration.forTestingWebpayPlusNormal();
-let wp = new WebpayNormal(configuration);
+const webpay = new Webpay(configuration).getNormalTransaction();
 
 app.get('/', (req, res) => {
   res.send(`
@@ -47,7 +50,7 @@ app.post('/pagar', (req, res) => {
    *
    * Nuestra misión es redireccionar al usuario a dicha url y token.
    */
-  wp.initTransaction(
+  webpay.initTransaction(
     amount,
     buyOrden,
     url + '/verificar',
@@ -74,31 +77,14 @@ app.post('/verificar', (req, res) => {
    * porque así se definió en initTransaction
    */
   console.log('pre token', token);
-  wp.getTransactionResult(token).then((transactionResult) => {
+  webpay.getTransactionResult(token).then((transactionResult) => {
     transaction = transactionResult;
     transactions[transaction.buyOrder] = transaction;
     transactionsByToken[token] = transactions[transaction.buyOrder];
 
-    console.log('transaction', transaction);
-    /**
-     * 4. Como resultado, obtendras transaction, que es un objeto con la información de la transacción.
-     * Independiente de si la transacción fue correcta o errónea, debes siempre
-     * hacer un llamado a acknowledgeTransaction con el token... Cosas de Transbank.
-     *
-     * Tienes 30 amplios segundos para hacer esto, sino la transacción se reversará.
-     */
-    console.log('re acknowledgeTransaction', token)
-    return wp.acknowledgeTransaction(token);
+    res.redirect(transaction.urlRedirection + '?token_ws=' + token);
+    // res.send(WebPay.getHtmlTransitionPage(transaction.urlRedirection, token));
 
-  }).then((result2) => {
-    console.log('pos acknowledgeTransaction', result2);
-    // Si llegas aquí, entonces la transacción fue confirmada.
-    // Este es un buen momento para guardar la información y actualizar tus registros (disminuir stock, etc).
-
-    // Por reglamento de Transbank, debes retornar una página en blanco con el fondo
-    // psicodélico de WebPay. Debes usar este gif: https://webpay3g.transbank.cl/webpayserver/imagenes/background.gif
-    // o bien usar la librería.
-    res.send(WebPay.getHtmlTransitionPage(transaction.urlRedirection, token));
   }).catch(onError(res));
 
 });
@@ -117,7 +103,7 @@ app.post('/anular', (req, res) => { // Notar que WebPay no permite anular RedCom
 
   const transaction = transactions[req.body.buyOrden];
 
-  wp.nullify({
+  webpay.nullify({
     authorizationCode: transaction.detailOutput.authorizationCode,
     authorizedAmount: transaction.detailOutput.amount,
     nullifyAmount: transaction.detailOutput.amount,

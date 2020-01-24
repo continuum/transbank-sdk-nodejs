@@ -1,9 +1,9 @@
 {
-  "name": "transbank-sdk-nodejs",
+  "name": "transbank-sdk",
   "version": "1.0.0",
-  "description": "",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "description": "Official SDK from Transbank Webpay",
+  "main": "./index.js",
+  "types": "lib/webpay/soap/webpay.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -16,14 +16,17 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
+  "engines": {
+    "node": ">=5.0.0"
+  },
   "keywords": [
     "transbank",
+    "webpay",
     "pagos",
     "payments"
   ],
-  "homepage": "https://github.com/caki0915/my-awesome-greeter#readme",
+  "homepage": "https://transbankdevelopers.cl",
   "dependencies": {
-    "decimal.js-light": "^2.2.3",
     "node-uuid": "^1.4.7",
     "pem": "^1.9.4",
     "soap": "^0.18.0",
@@ -41,6 +44,6 @@
   "files": [
     "lib/**/*"
   ],
-  "author": "TransbankDevelopers",
+  "author": "Gonzalo De Spírito <gonzalo.despirito@continuum.cl> (https://transbankdevelopers.cl)",
   "license": "BSD-3 with Clause"
 }
