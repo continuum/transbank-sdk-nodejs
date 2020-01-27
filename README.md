@@ -8,7 +8,7 @@ Eso fue un error. La cagamos y ofrecemos como equipo (y personalmente) las discu
 
 **Y en ningún caso hemos tenido la intención de apropiarnos de nada**. Si hubiéramos querido hacerlo, habríamos desarrollado en un repositorio privado en lugar de tener un repositorio público con nuestros avances. Seríamos bien pavos si quisiéramos esconder la copia renombrando variables (o comentando código) y lo dejamos en commits públicos acá en Github 🤦🏻‍♂️ 
 
-Personalmente invito a quien quiera que tenga dudas a que me escriba por [twitter](twitter.com/leosoto) o a mi correo <leo.soto arroba continuum punto cl>. 
+Personalmente invito a quien quiera que tenga dudas a que me escriba por [twitter](https://twitter.com/leosoto) o a mi correo <leo.soto arroba continuum punto cl>. 
 
 — Leo Soto, socio de Continuum.
 
